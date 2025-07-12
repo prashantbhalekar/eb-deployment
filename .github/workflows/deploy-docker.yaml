@@ -15,7 +15,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd docker-deployment
-            git pull origin main
+            git pull
             docker stop myapp || true
             docker rm myapp || true
             docker build -t myapp .
