@@ -16,7 +16,7 @@ jobs:
           script: |
             cd docker-deployment
             git pull
-            docker stop myapp || true
-            docker rm myapp || true
-            docker build -t myapp .
-            docker run -d -p 3000:3000 --name myapp myapp
+            sudo docker stop myapp || true
+            sudo docker rm myapp || true
+            sudo docker build -t myapp .
+            sudo docker run -d -p 3000:3000 --name myapp myapp
