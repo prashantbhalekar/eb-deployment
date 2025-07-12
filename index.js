@@ -19,6 +19,13 @@ app.get("/msg", (req, res) => {
   });
 });
 
+app.get("/msg1", (req, res) => {
+  res.json({
+    success: true,
+    msg: "Hello There again!",
+  });
+});
+
 app.listen("3000", () => {
   console.log("Server listening on port 3000");
 });
