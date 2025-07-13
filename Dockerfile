@@ -1,5 +1,6 @@
-FROM node:18
+FROM node:lts-alpine
 WORKDIR /app
-COPY . .
+COPY ./package.json ./
 RUN npm install
-CMD ["node", "index.js"]
+COPY ./ ./
+CMD ["npm", "start"]

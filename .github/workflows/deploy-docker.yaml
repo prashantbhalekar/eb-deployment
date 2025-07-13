@@ -1,4 +1,4 @@
-name: Docker Deploy to EC2
+name: Docker Deploy to EB
 on:
   push:
     branches: [master]
@@ -7,16 +7,26 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@master
+      - uses: actions/checkout@v3
+      - uses: docker/login-action@v2
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd docker-deployment
-            git pull
-            sudo docker stop myapp || true
-            sudo docker rm myapp || true
-            sudo docker build -t myapp .
-            sudo docker run -d -p 3000:3000 --name myapp myapp
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - run: |
+          docker build -t myapp .
+          docker push lightyagami/myapp
+
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v18
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          application_name: eb-deployment
+          environment_name: Eb-deployment-env
+          existing_bucket_name: elasticbeanstalk-us-east-1-169727206733
+          region: us-east-1
+          version_label: ${{ github.sha }}
+          deployment_package: deploy.zip
